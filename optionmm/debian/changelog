@@ -1,0 +1,27 @@
+optionmm (2.1) unstable; urgency=low
+
+  * updated with upstream
+
+ -- Christian Holm Christensen <cholm@cholm>  Sat, 27 Dec 2003 00:28:19 +0100
+
+optionmm (2.0) unstable; urgency=low
+
+  * Updated the version number
+
+ -- Christian Holm Christensen <cholm@cholm>  Thu, 18 Dec 2003 12:12:48 +0100
+
+optionmm (1.1.0) unstable; urgency=low
+
+  * Bumped to 1.1 due to new position tracking
+
+ -- Christian Holm <cholm@linux.HAL3000>  Mon,  5 May 2003 14:37:51 +0200
+
+optionmm (1.0) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Christian Holm <cholm@nbi.dk>  Sun, 29 Dec 2002 17:23:51 +0100
+
+Local variables:
+mode: debian-changelog
+End:

@@ -1,0 +1,193 @@
+2004-01-13  Christian Holm Christensen  <cholm@cholm.nbi.dk>
+
+	* tests/testsuite.at: Fixed one of the testsuite
+
+	* configure.ac: Updated the version number
+
+	* optionmm/option.hh: Made option_base::print virtual and abstract.
+	Moved option_base::print to basic_option<...>::print.
+	This is so that users may customise that aspect of the library
+
+	* optionmm/option.hh, tests/testsuite.at: Fixes
+
+2003-12-27  Christian Holm Christensen  <cholm@cholm.nbi.dk>
+
+	* doc/mainpage.cc: Fixes to the docs
+
+2003-12-26  Christian Holm Christensen  <cholm@cholm.nbi.dk>
+
+	* tests/tryit.cc: Fixed a typo
+
+	* README: Added a `Thanks' section
+
+	* configure.ac: Took out useless libtool search
+
+	* debian/changelog: New version
+
+	* optionmm/option.hh: Use an enum value for handle return codes.
+
+	* optionmm/command_line.hh:
+	Fixed the member functions to use new return values from option_base
+
+	* configure.ac: New minor version
+
+	* optionmm/option.hh: Fixes
+
+2003-12-18  Christian Holm Christensen  <cholm@cholm.nbi.dk>
+
+	* debian/control: Fixed some Lintian warnings
+
+	* debian/.cvsignore: Added ignores
+
+	* tests/.cvsignore, tests/demo.cc, tests/testsuite.at, tests/tryit.cc:
+	Updated code & documentation for new scheme.
+
+	* optionmm/command_line.hh, optionmm/option.hh:
+	Updated documentation for new scheme.
+
+	* doc/header.html, doc/mainpage.cc, doc/style.css:
+	Better header and style.
+	Updated documentation for new scheme.
+
+	* debian/.cvsignore, debian/optionmm.postinst.debhelper, debian/optionmm.prerm.debhelper:
+	Removed files that shouldn't have been commited.
+	Added ignores.
+
+	* support/optionmm-config.1:
+	Updated a bit because there's no library anymore, and added a few more
+	notes.
+
+	* support/optionmm.m4:
+	Took out the library part, as the classes are implemented inline
+
+	* support/optionmm-config.in:
+	took out the library stuff, as the classes are implemented inline
+
+	* debian/Makefile.am:
+	Now a single package with everything in one go.   The classes are now
+	completely implemented inline, to easy the installation and
+	integration with client projects.
+
+	* doc/doxyconfig.in: Updated for newer doxygen
+
+	* debian/optionmm.dirs, debian/optionmm.doc-base, debian/optionmm.docs, debian/optionmm.examples, debian/optionmm.files, debian/optionmm.manpages, debian/optionmm.postinst.debhelper, debian/optionmm.prerm.debhelper:
+	Files for one package only
+
+	* tests/Makefile.am: Don't link anymore
+
+	* optionmm/Makefile.am, optionmm/command_line.cc, optionmm/command_line.hh, optionmm/option.cc, optionmm/option.hh:
+	Put all into the header files, so that it's easier to integrate.
+
+	* debian/changelog, debian/control, debian/liboptionmm-dev.dirs, debian/liboptionmm-dev.examples, debian/liboptionmm-dev.files, debian/liboptionmm-dev.manpages, debian/liboptionmm-doc.doc-base, debian/liboptionmm-doc.docs, debian/liboptionmm1.dirs, debian/liboptionmm1.docs, debian/liboptionmm1.files:
+	Merged all packages to one as there's no binary files anymore
+
+	* configure.ac: Updated the version number
+
+2003-09-15  Christian Holm Christensen  <cholm@cholm.nbi.dk>
+
+	* optionmm/command_line.cc, optionmm/option.cc, optionmm/option.hh:
+	mid-way check-in
+
+2003-06-22  Christian Holm Christensen  <cholm@cholm.nbi.dk>
+
+	* ide/configure, ide/optionmm.prj, doc/.cvsignore, doc/Makefile.am, ide/.cvsignore, ide/Makefile.am:
+	Fixes
+
+	* ide/optionmm.kdevprj: Builds in subdirectory
+
+2003-06-21  Christian Holm Christensen  <cholm@cholm.nbi.dk>
+
+	* configure.ac, doc/doxyconfig.in, doc/logo.png, doc/style.css, ide/optionmm.kdevprj:
+	minor changes
+
+2003-06-16  Christian Holm Christensen  <cholm@cholm.nbi.dk>
+
+	* ide/Makefile.am, ide/optionmm.kdevprj, ide/optionmm.prj, ide/.cvsignore:
+	updates to project files
+
+2003-06-15  Christian Holm Christensen  <cholm@cholm.nbi.dk>
+
+	* Makefile.am, README, configure.ac, debian/Makefile.am, doc/Makefile.am, ide/.cvsignore, ide/Makefile.am, ide/cl, ide/demo.dev, ide/demo.dsp, ide/liboptionmm.dev, ide/liboptionmm.dsp, ide/optionmm.dsw, ide/optionmm.kdevprj, ide/optionmm.prj, ide/tryit.dev, ide/tryit.dsp, optionmm.kdevprj, optionmm.prj, optionmm/Makefile.am, optionmm/command_line.cc, optionmm/command_line.hh, optionmm/option.hh, support/Makefile.am, tests/Makefile.am, tests/package.m4.in:
+	MSVC stuff
+
+2003-05-05  Christian Holm Christensen  <cholm@cholm.nbi.dk>
+
+	* configure.ac, debian/changelog, doc/Makefile.am, doc/doxyconfig.in, doc/fdl.cc, doc/mainpage.cc, optionmm/option.hh, tests/Makefile.am, tests/package.m4.in:
+	Fixes to docs and new version
+
+	* optionmm/command_line.hh, optionmm/option.cc, optionmm/command_line.cc, optionmm/option.hh:
+	Added support for tracking the position where a given option was given
+	on the command line.  Using that, a client may implement some sort of
+	context dependent option parsing.
+
+	* optionmm/command_line.hh, optionmm/command_line.cc: Added typedef
+
+2003-04-09  Christian Holm Christensen  <cholm@cholm.nbi.dk>
+
+	* configure.ac: Added a micor-version number
+
+	* tests/Makefile.am, support/Makefile.am, doc/Makefile.am, doc/doxyconfig.in:
+	Fixed some problems in the distribution
+
+2003-01-04  Christian Holm Christensen  <cholm@cholm.nbi.dk>
+
+	* doc/Makefile.am, doc/favicon.png, doc/header.html, doc/logo.png, doc/mainpage.cc:
+	Added logo and favicon to docs
+
+2002-12-30  Christian Holm Christensen  <cholm@cholm.nbi.dk>
+
+	* support/optionmm.m4: Fixed a typo
+
+	* debian/Makefile.am: Fix to direibution
+
+	* debian/.cvsignore, autogen.sh, debian/control, debian/liboptionmm-dev.doc-base, debian/liboptionmm-dev.docs, debian/liboptionmm-doc.doc-base, debian/liboptionmm-doc.docs:
+	Fix
+
+	* debian/liboptionmm-dev.docs, debian/rules: add tag file to docs
+
+	* debian/liboptionmm-dev.files, debian/Makefile.am: Fix
+
+	* debian/rules: Minor fixes
+
+	* debian/rules:
+	Added .css files to list of files that should not be compressed.
+
+	* debian/liboptionmm-dev.doc-base:
+	Added file to handle installation of documentation in Debian
+
+2002-12-29  Christian Holm Christensen  <cholm@cholm.nbi.dk>
+
+	* debian/rules: *** empty log message ***
+
+	* .cvsignore, Makefile.am, README, autogen.sh, configure.ac, debian/.cvsignore, doc/Makefile.am, support/Makefile.am:
+	Some fixes for the dist
+
+	* debian/Makefile.am: Added Makefile.am in Debian directory
+
+	* .cvsignore, optionmm.kdevprj: Changes to KDEvelop project file
+
+	* .cvsignore, autogen, autogen.sh, debian/rules, optionmm.kdevprj:
+	KDEvelop project file
+
+	* TODO, autogen.sh, optionmm.prj, tests/.cvsignore, .cvsignore:
+	Some stuff from Anjuta
+
+	* doc/Makefile.am: Took out some stuff that I haven't put in yet
+
+	* .cvsignore, config/.cvsignore: Added more to be ignored
+
+	* support/.cvsignore: Added an ignor file
+
+	* tests/.cvsignore: Added an ignore file
+
+	* README: Added a reference to the Html documentation.
+
+	* debian/control:
+	Fixed a minor problem that caused the devel package to be broken.
+
+	* .cvsignore, AUTHORS, COPYING, Makefile.am, NEWS, README, autogen, config/.cvsignore, configure.ac, debian/.cvsignore, debian/changelog, debian/control, debian/copyright, debian/dirs, debian/liboptionmm-dev.dirs, debian/liboptionmm-dev.docs, debian/liboptionmm-dev.examples, debian/liboptionmm-dev.files, debian/liboptionmm-dev.manpages, debian/liboptionmm1.dirs, debian/liboptionmm1.docs, debian/liboptionmm1.files, debian/rules, doc/.cvsignore, doc/Makefile.am, doc/doxyconfig.in, doc/examples.cc, doc/fdl.cc, doc/footer.html, doc/header.html, doc/lgpl.cc, doc/mainpage.cc, doc/style.css, optionmm/.cvsignore, optionmm/Makefile.am, optionmm/command_line.cc, optionmm/command_line.hh, optionmm/option.cc, optionmm/option.hh, support/Makefile.am, support/optionmm-config.1, support/optionmm-config.in, support/optionmm.m4, tests/Makefile.am, tests/demo.cc, tests/testsuite.at, tests/tryit.cc:
+	Initial import of Option--
+
+	* .cvsignore, AUTHORS, COPYING, Makefile.am, NEWS, README, autogen, config/.cvsignore, configure.ac, debian/.cvsignore, debian/changelog, debian/control, debian/copyright, debian/dirs, debian/liboptionmm-dev.dirs, debian/liboptionmm-dev.docs, debian/liboptionmm-dev.examples, debian/liboptionmm-dev.files, debian/liboptionmm-dev.manpages, debian/liboptionmm1.dirs, debian/liboptionmm1.docs, debian/liboptionmm1.files, debian/rules, doc/.cvsignore, doc/Makefile.am, doc/doxyconfig.in, doc/examples.cc, doc/fdl.cc, doc/footer.html, doc/header.html, doc/lgpl.cc, doc/mainpage.cc, doc/style.css, optionmm/.cvsignore, optionmm/Makefile.am, optionmm/command_line.cc, optionmm/command_line.hh, optionmm/option.cc, optionmm/option.hh, support/Makefile.am, support/optionmm-config.1, support/optionmm-config.in, support/optionmm.m4, tests/Makefile.am, tests/demo.cc, tests/testsuite.at, tests/tryit.cc:
+	New file.
+

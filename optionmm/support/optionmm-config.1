@@ -1,0 +1,91 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.\" First parameter, NAME, should be all caps
+.\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
+.\" other parameters are allowed: see man(7), man(1)
+.TH OPTIONMM-CONFIG 1 "December 29, 2002"
+.\" Please adjust this date whenever revising the manpage.
+.\"
+.\" Some roff macros, for reference:
+.\" .nh        disable hyphenation
+.\" .hy        enable hyphenation
+.\" .ad l      left justify
+.\" .ad b      justify to both left and right margins
+.\" .nf        disable filling
+.\" .fi        enable filling
+.\" .br        insert line break
+.\" .sp <n>    insert n+1 empty lines
+.\" for manpage-specific macros, see man(7)
+.SH NAME
+optionmm-config \- Give information on Option-- installation
+.SH SYNOPSIS
+.B optionmm-config 
+.RI [ options ] 
+.SH DESCRIPTION
+.B optionmm-config
+gives information on the installation \fBOption--\fR.
+.SH USAGE
+Use this utility in your \fBMakefile\fR like  
+.RS
+.nf
+
+CPPFLAGS := $(shell optionmm-config --cppflags)
+
+.fi
+.RE
+Optionally, if you use \fBAutotools\fR you can put the macro
+\fTAM_PATH_OPTIONMM\fR in your \fTconfigure.ac\fR file: 
+.RS
+.nf
+
+AM_PATH_OPTIONMM([2.0],,
+		 [AC_MSG_ERROR([Option-- not found, cannot proceed])])
+
+.fi
+.RE
+The first argument is the minimum version of \fBOption\-\-\fR needed,
+the second is the shell script code to be executed if \fBOption\-\-\fR
+is found on the system and the version number is greater than or equal
+to the first argument, and the final argument is if \fBOption\-\-\fR
+isn't found on the system, or the version number is less than the
+first argument.
+.PP
+This will define the substitution variable \fTOPTIONMM_CPFLAGS\fR in
+your \fTMakefile\fR, which you then can put into your
+\fTAM_CPPFLAGS\fR. 
+.RS
+.nf
+
+AM_CPPFLAGS = $(OPTIONMM_CPPFLAGS)
+
+.fi
+.RE
+.SH OPTIONS
+These programs follow the usual GNU command line syntax, with long
+options starting with two dashes (`-').
+A summary of options is included below.
+.TP
+.B \-\-help
+Show summary of options.
+.TP
+.B \-\-version
+Show version of \fBOption--\fR.
+.TP
+.B \-\-prefix
+Giv installation prefix.
+.TP
+.B \-\-includedir
+Giv installation header directory.
+.TP
+.B \-\-cppflags
+Gives preprocessor options needed to link against \fBOption--\fR.
+.SH SEE ALSO
+The library is documented in the Html documentation created by Doxygen
+directly from the source code. 
+.PP
+The documentation is also available on\-line at 
+.US
+http://cholm.home.cern.ch/misc/#optionmm
+.UE
+.SH AUTHOR
+This manual page was written by Christian Holm <cholm@nbi.dk>,
+for the Debian GNU/Linux system (but may be used by others).

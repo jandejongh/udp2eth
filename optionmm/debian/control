@@ -1,0 +1,14 @@
+Source: optionmm
+Priority: optional
+Maintainer: Christian Holm <cholm@nbi.dk>
+Build-Depends-Indep: debhelper (>> 3.0.0), doxygen
+Standards-Version: 3.6.0
+
+Package: optionmm
+Section: devel
+Architecture: all
+Description: A C++ class library for parsing command line options
+ This library provides a number of C++ classes for parsing application
+ command line options.  The basic class is the template class
+ optionmm::option that gives many nice customisable features. 
+

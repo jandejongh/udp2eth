@@ -1,0 +1,84 @@
+#!/bin/sh
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+includedir=@includedir@ 
+package="@PACKAGE_TARNAME@"
+string="@PACKAGE_STRING@"
+email="@PACKAGE_BUGREPORT@"
+version="@VERSION@"
+
+prog=`basename $0`
+
+if test $# -eq 0 ; then 
+    $0 --help
+    exit 0
+fi
+
+while test $# -gt 0 ; do 
+    case $1 in 
+	--*=*)    
+	    opt=`echo $1 | sed 's/=.*//'`
+	    arg=`echo $1 | sed 's/[^=]*=//'` 
+	    ;;
+	--*)
+	    opt=$1
+	    arg=
+	    ;;
+	-*)
+	    opt=$1
+	    arg=$2
+	    ;;
+	*)
+	    echo "$prog: unknown argument '$1', try '$prog --help'"
+	    exit 1
+	    ;;
+    esac
+
+    case $opt in
+	--help|-h) 
+	    cat <<EOF
+Usage: $prog [options]
+
+  --prefix          Gives the installation prefix
+  --includedir      Gives path to headers 
+  --cppflags        Gives preprocessor information
+  --version         Gives version information
+  --help            Gives this help
+EOF
+	    ;;
+	--version|-v)
+	    cat <<EOF
+$string 
+
+Copyright 2002 Christian Holm Christensen <$email>
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+EOF
+	    exit 0
+	    ;;
+	-V)
+	    echo $version 
+	    exit 0
+	    ;;
+	--prefix|-p)
+	    out="$out $prefix" 
+	    ;;
+	--includedir|-I)
+	    out="$out $includedir" 
+	    ;;
+	--cppflags|-D)
+	    if test ! "x$includedir" = "x/usr/include" ; then 
+		out="$out -I$includedir" 
+	    fi
+	    ;;
+	*)
+	    echo "$prog: unknown option '$opt' - try '$prog --help'"
+	    exit 1
+    esac
+    shift
+done
+		
+echo $out	
+		
+	

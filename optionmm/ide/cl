@@ -1,0 +1,19 @@
+#!/bin/sh
+
+compiler="`which cl.exe`"
+if test "x$compiler" = "x" ; then 
+    echo "The compiler cl isn't in the PATH, please check it"
+    exit 1
+fi
+args="/nologo"
+for i in $* ; do 
+    case $i in
+	*.cc) args="$args /Tp$i" ;; 
+	*)    args="$args $i"    ;;
+    esac
+done 
+# echo  "$compiler" $args 
+	   
+# Execute the compiler command.  As MSVC's compiler echos the file name 
+# to stdout, we grep it out. 
+exec "$compiler" $args 

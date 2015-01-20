@@ -1,0 +1,9 @@
+Document: optionmm
+Title: Option-- Reference Manual
+Author: Christian Holm Christensen
+Abstract:Reference manual of the Option-- classes. 
+Section: Apps/Programming
+
+Format: HTML
+Index: /usr/share/doc/optionmm/html/index.html
+Files: /usr/share/doc/optionmm/html/*.html

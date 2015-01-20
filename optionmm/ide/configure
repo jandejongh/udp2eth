@@ -1,0 +1,20 @@
+#!/bin/sh
+#
+# $Id: configure,v 1.3 2003/06/22 01:06:31 cholm Exp $
+#
+# Dummy configure for KDevelop that configures the source tree in
+# sub-directory  `build'
+#
+mkdir -p build
+(cd build && ../../configure $*)
+
+rm -f ../optionmm/Makefile
+cat > ../optionmm/Makefile <<EOF	
+all clean dist distclean maintainer-clean install install-data install-exec uninstall installdirs install-strip:
+	@echo "Executing \$(MAKE) \$@ -C ../ide/build"
+	(cd ../ide/build && \$(MAKE) \$@)
+EOF
+
+# 
+# EOF 
+#

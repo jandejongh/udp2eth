@@ -1,0 +1,116 @@
+
+	A C++ Command line option parsing library
+	=========================================
+
+Please refer to the automatically generated HTML documentation.  
+
+Thanks:
+-------
+	Chris Haidinyak <chrish@techspecs.com> for reporting bugs on
+	error handling.
+
+Debian:
+-------
+	I use Debian GNU/Linux 3.0 for most of what I do. 
+
+	To make a debian package, simply do `debuild'.  
+	
+	The HTML documentation is installed in the liboptionmm-dev
+	Debian package. 
+
+Red Hat:
+--------
+	There's no support for making Red Hat packages just yet -
+	sorry.  However, I do plan to make it at some point. 
+
+IDE's:
+------
+	The sub-directory `ide' contains some project files for
+	various IDEs (Integrated Development Platforms).  
+
+	`optionmm.dsw'
+	`liboptionmm.dsp'
+	`demo.dsp'
+	`tryit.dsp'
+		Microsoft Visual C++ 6.0 project and workspace files. 
+
+
+		Note, that I use `.cc' as the extension for C++
+		implementation files, and `.hh' as the extension for
+		C++ declaration files.  MSVC and Microsoft Visual
+		Studio (MSVS) does not understand those extension as
+		C++ files, so you need to do a bit of Registry magic
+		to get it to work.  Here's how (also refer to the
+		documentation of MSVC and MSVS):
+	
+		* Start `regedit'
+
+		* In the group `HKEY_CLASS_ROOT', add two new keys, by
+		  selecting `New -> Key' from the pop-up menu (right
+		  click), called `.cc' with value `cppfile' and
+		  another called `.hh' with value `hppfile'.
+
+		* In the group `HKEY_CURRENT_USER', find the group for
+		  MS Developer studio:
+
+		    Software\Microsoft\DevStudio\<version>
+
+		  There, you need to find the sub-entry for the
+		  platform, typically something like:
+
+	            Build System\Components\Platforms\Win32 (<cpu>)
+             
+                  In that group, there's another subgroup for the compiler:
+
+    	            Tools\C/C++ Compiler for <cpu>
+
+		  Whew! OK.  In this group, edit the `Input_Spec'
+	          entry to contain `*.cc'.
+
+	        * Going back to the Developer Studio group, find the
+	          group for the editor, and it's language settings for
+	          C/C++:
+
+	            Text Editor\Tabs/Language Settings\C/C++
+ 
+	          There's an entry called `FileExtensions' - edit that
+		  qto contain `hh' and `cc'.
+        
+	        Once all that's done, you'll have nice syntax
+	        highlighting and so on in MSVS when you open the
+	        `optionmm' workspace.
+
+	`liboptionmm.dev'
+	`demo.dev'
+	`tryit.dev'
+	        Dev-C++ project files. 
+			
+MS Visual C++ 6.0:
+------------------
+	To build using Microsoft Visual C++ 6.0 (MSVC), you should run
+	configure as follows:
+
+	  ./configure CC=`pwd`/ide/cl		\
+		      CXX=`pwd`/ide/cl		\
+		      CXXFLAGS="-GX"		\
+		      LD=link			
+		      --enable-dependency-tracking 
+	  
+
+	The script "`pwd`/ide/cl" is a small wrapper around MSVC's
+	compiler "cl.exe" that simply prefixes all ".cc" files with
+	the option "/Tp" to force C++ compilation. 
+
+	The flag "-GX" is to enable exception handling. 
+
+	The option "--enable-dependency-tracking" is to have Autotools
+	track the dependencies of the source code. 
+
+	Note, that `make check' report failure, but as is evident from
+	the output, the tests don't really fail. Hence, please don't
+	report that as a bug to me. 
+
+
+Christian Holm Christensen
+<cholm@nbi.dk>
+

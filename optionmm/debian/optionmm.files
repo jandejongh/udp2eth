@@ -1,0 +1,3 @@
+usr/include/*
+usr/bin/optionmm-config
+usr/share/aclocal/optionmm.m4
