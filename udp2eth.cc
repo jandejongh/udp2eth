@@ -14,6 +14,7 @@
 #include <unistd.h>
 #include <net/if.h>
 #include <net/ethernet.h>
+#include <netpacket/packet.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <string.h>
@@ -242,6 +243,7 @@ static int open_eth_socket (const std::string &eth_name)
   }
   // Find the Ethernet interface index.
   struct ifreq ifr;
+  memset (&ifr, 0, sizeof (ifr));
   const size_t eth_name_len = strlen (eth_name.c_str ());
   if (eth_name_len < sizeof (ifr.ifr_name))
   {
@@ -251,14 +253,35 @@ static int open_eth_socket (const std::string &eth_name)
   else
   {
     std::cerr << "[udp2eth] open_eth_socket: interface name " << eth_name << " too long." << std::endl;
+    close (sock);
     exit (-1);
   }
   if (ioctl (sock, SIOCGIFINDEX, &ifr) == -1)
   {
     std::cerr << "[udp2eth] open_eth_socket: Ethernet interface " << eth_name << " not found." << std::endl;
+    close (sock);
     exit (-1);
   }
-  int ifindex = ifr.ifr_ifindex;
+  // The following piece of code apparently does not work for the socket type.
+  //if (setsockopt (sock, SOL_SOCKET, SO_BINDTODEVICE, (void *) &ifr, sizeof (ifr)) < 0)
+  //{
+  //  std::cerr << "[udp2eth] open_eth_socket: unable to bind socket to interface with name "
+  //            << eth_name << "." << std::endl;
+  //  close (sock);
+  //  exit(-1);
+  //}
+  struct sockaddr_ll sll;
+  memset (&sll, 0, sizeof (sll));
+  sll.sll_family = AF_PACKET; 
+  sll.sll_ifindex = ifr.ifr_ifindex; 
+  sll.sll_protocol = htons (ETH_P_ALL); 
+  if (bind (sock, (struct sockaddr *) &sll , sizeof (sll)) == -1)
+  {
+    std::cerr << "[udp2eth] open_eth_socket: unable to bind socket to interface with name "
+              << eth_name << "." << std::endl;
+    close (sock);
+    exit(-1);
+  }
   return sock;
 }
 
