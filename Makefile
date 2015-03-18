@@ -12,7 +12,7 @@ LDFLAGS += -Wl,-rpath -Wl,/usr/local/lib -L/usr/local/lib
 
 .PHONY: ALL clean install
 
-ALL: ${PROG}
+ALL: ${PROG} # ${PROG}-static
 
 clean:
 	rm -f ${PROG} *.o
@@ -23,6 +23,9 @@ SOURCESCXXCMP:= udp2eth.cc
 
 ${PROG}: ${SOURCESCXXDEP}
 	${CXX} -I. -I${OPTIONMM} -o $@ ${SOURCESCXXCMP} ${LDFLAGS}
+
+# ${PROG}-static: ${SOURCESCXXDEP}
+# 	${CXX} -I. -I${OPTIONMM} -o $@ ${SOURCESCXXCMP} -lstdc++ -static-libstdc++ ${LDFLAGS}
 
 install: ALL
 	$(INSTALL_DIR) $(PREFIX)/bin

@@ -9,8 +9,11 @@
 //
  
 #include <sys/types.h>
+#include <sys/ioctl.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <net/if.h>
+#include <net/ethernet.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <string.h>
@@ -29,13 +32,13 @@ using namespace std;
 // Version numbers.
 //
 static const int VersionMajor = 0;
-static const int VersionMinor = 1;
+static const int VersionMinor = 2;
 
 //
 // Defaults and boundaries.
 //
 
-static const std::string default_device_s  = "eth0";
+static const std::string default_device_s  = "wlan0";
 static const std::string default_server_s = "0.0.0.0:1235"; 
 static const std::string default_client_s = "127.0.0.1:1236";
 
@@ -224,6 +227,42 @@ static int open_udp_socket (const uint16_t port)
 }
 
 //
+// Open a AF_PACKET socket with user-supplied Ethernet header (SOCK_RAW) for given interface name.
+//
+
+static int open_eth_socket (const std::string &eth_name)
+{
+  // Create the socket.
+  int sock;
+  sock = socket (AF_PACKET, SOCK_RAW, htons (ETH_P_ALL));
+  if (sock < 0)
+  {
+    std::cerr << "[udp2eth] open_eth_socket: unable to create socket." << std::endl;
+    exit (-1);
+  }
+  // Find the Ethernet interface index.
+  struct ifreq ifr;
+  const size_t eth_name_len = strlen (eth_name.c_str ());
+  if (eth_name_len < sizeof (ifr.ifr_name))
+  {
+    memcpy (ifr.ifr_name, eth_name.c_str (), eth_name_len);
+    ifr.ifr_name[eth_name_len] = 0;
+  }
+  else
+  {
+    std::cerr << "[udp2eth] open_eth_socket: interface name " << eth_name << " too long." << std::endl;
+    exit (-1);
+  }
+  if (ioctl (sock, SIOCGIFINDEX, &ifr) == -1)
+  {
+    std::cerr << "[udp2eth] open_eth_socket: Ethernet interface " << eth_name << " not found." << std::endl;
+    exit (-1);
+  }
+  int ifindex = ifr.ifr_ifindex;
+  return sock;
+}
+
+//
 // Main entry.
 //
 int main (int argc, char** argv)
@@ -240,11 +279,11 @@ int main (int argc, char** argv)
   cl.add (list_opt);
   optionmm::bool_option verbose_opt ('v', "verbose", "Verbose debugging", false);
   cl.add (verbose_opt);
-  optionmm::basic_option<std::string,true,false> device_opt ('\0', "device", "device name", default_device_s);
+  optionmm::basic_option<std::string,true,false> device_opt ('\0', "device", "(Ethernet) Device name", default_device_s);
   cl.add (device_opt);
-  optionmm::basic_option<std::string,true,false> server_opt ('\0', "server", "server address", default_server_s);
+  optionmm::basic_option<std::string,true,false> server_opt ('\0', "server", "Server address", default_server_s);
   cl.add (server_opt);
-  optionmm::basic_option<std::string,true,false> client_opt ('\0', "client", "client address", default_client_s);
+  optionmm::basic_option<std::string,true,false> client_opt ('\0', "client", "Client address", default_client_s);
   cl.add (client_opt);
 
   //
@@ -261,7 +300,7 @@ int main (int argc, char** argv)
   //
   if (argc > 1)
   {
-    std::cerr << "[udp2eth] " << argc - 1 << " unprocessed command-line arguments [try 'geonetd --help']:" << std::endl;
+    std::cerr << "[udp2eth] " << argc - 1 << " unprocessed command-line arguments [try 'udp2eth --help']:" << std::endl;
     for (int i = 1; i < argc; i++)
     {
       std::cerr << "  " << i << ": " << argv[i] << std::endl;
@@ -288,6 +327,7 @@ int main (int argc, char** argv)
   // Collect parameters from options.
   //
   const bool list_parameters_only = list_opt.value (0);
+  const bool verbose = verbose_opt.value (0);
   const std::string device_s = device_opt.value (0);
   const std::string server_s = server_opt.value (0);
   const std::string client_s = client_opt.value (0);
@@ -311,7 +351,6 @@ int main (int argc, char** argv)
   //
   // Ethernet socket.
   //
-  // XXX
 
   //
   // UDP client addess.
@@ -341,7 +380,7 @@ int main (int argc, char** argv)
     //
     if (eth_sock < 0)
     {
-      // XXX
+      eth_sock = open_eth_socket (device_s);
     }
     //
     // Open the UDP server socket for incoming payload.
@@ -398,12 +437,61 @@ int main (int argc, char** argv)
     {
       if (eth_sock >= 0 && FD_ISSET (eth_sock, &isocks))
       {
-        std::cerr << "[udp2eth] eth_sock." << std::endl;
-        // XXX
+        if (verbose)
+        {
+          std::cerr << "[udp2eth] eth_sock." << std::endl;
+        }
+        // Read from eth_sock until exhaustion.
+        bool need_more = true;
+        while (eth_sock >= 0 && need_more)
+        {
+          unsigned char buf[4096];
+          const int recv_ret = recv (eth_sock, buf, 4096, MSG_DONTWAIT);
+          if (recv_ret > 0)
+          {
+            if (verbose)
+            {
+              std::cerr << "[udp2eth] eth_sock: received " << recv_ret << " bytes!" << std::endl;
+            }
+            // Send to udp_server_sock...
+            if (udp_server_sock >= 0)
+            {
+              // if (send (udp_server_sock, buf, recv_ret, 0) == -1)
+              if (sendto (udp_server_sock, buf, recv_ret, 0, (struct sockaddr *) udp_client_address,
+                          sizeof (*udp_client_address)) == -1)
+              {
+                std::cerr << "[udp2eth] Failed to send to udp_server_sock!" << std::endl;
+              }
+            }
+            else
+            {
+              std::cerr << "[udp2eth] No udp_server_sock!" << std::endl;
+            }
+          }
+          else if (recv_ret == -1 && (errno == EAGAIN || errno == EWOULDBLOCK))
+          {
+            need_more = false;
+          }
+          else if (recv_ret == 0)
+          {
+            std::cerr << "[udp2eth] Recv from Ethernet socket return 0, indicating shutdown. This should not happen!" << std::endl;
+            close (eth_sock);
+            eth_sock = -1;
+          }
+          else
+          {
+            std::cerr << "[udp2eth] Recv from Ethernet socket return unexpected negative value!" << std::endl;
+            close (eth_sock);
+            eth_sock = -1;
+          }
+        }
       }
       if (udp_server_sock >= 0 && FD_ISSET (udp_server_sock, &isocks))
       {
-        std::cerr << "[udp2eth] udp_server_sock." << std::endl;
+        if (verbose)
+        {
+          std::cerr << "[udp2eth] udp_server_sock." << std::endl;
+        }
         // Read from udp_server_sock until exhaustion.
         bool need_more = true;
         while (udp_server_sock >= 0 && need_more)
@@ -412,8 +500,24 @@ int main (int argc, char** argv)
           const int recv_ret = recv (udp_server_sock, buf, 4096, MSG_DONTWAIT);
           if (recv_ret > 0)
           {
+            if (verbose)
+            {
+              std::cerr << "[udp2eth] udp_server_sock: received " << recv_ret << " bytes!" << std::endl;
+            }
             // Send to eth_sock...
-            // XXX
+            if (eth_sock >= 0)
+            {
+              if (send (eth_sock, buf, recv_ret, 0) == -1)
+              // if (sendto (eth_sock, buf, recv_ret, 0, (struct sockaddr *) udp_client_address,
+              //            sizeof (*udp_client_address)) == -1)
+              {
+                std::cerr << "[udp2eth] Failed to send to eth_sock!" << std::endl;
+              }
+            }
+            else
+            {
+              std::cerr << "[udp2eth] No eth_sock!" << std::endl;
+            }
           }
           else if (recv_ret == -1 && (errno == EAGAIN || errno == EWOULDBLOCK))
           {
