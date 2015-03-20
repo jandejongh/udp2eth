@@ -231,7 +231,7 @@ static int open_udp_socket (const uint16_t port)
 // Open a AF_PACKET socket with user-supplied Ethernet header (SOCK_RAW) for given interface name.
 //
 
-static int open_eth_socket (const std::string &eth_name)
+static int open_eth_socket (const std::string &eth_name, const bool promiscuous)
 {
   // Create the socket.
   int sock;
@@ -268,7 +268,7 @@ static int open_eth_socket (const std::string &eth_name)
   //  std::cerr << "[udp2eth] open_eth_socket: unable to bind socket to interface with name "
   //            << eth_name << "." << std::endl;
   //  close (sock);
-  //  exit(-1);
+  //  exit  (-1);
   //}
   struct sockaddr_ll sll;
   memset (&sll, 0, sizeof (sll));
@@ -280,7 +280,31 @@ static int open_eth_socket (const std::string &eth_name)
     std::cerr << "[udp2eth] open_eth_socket: unable to bind socket to interface with name "
               << eth_name << "." << std::endl;
     close (sock);
-    exit(-1);
+    exit (-1);
+  }
+  if (promiscuous)
+  {
+    /* Get the current flags that the device might have. */
+    if (ioctl (sock, SIOCGIFFLAGS, &ifr) == -1)
+    {
+      std::cerr << "[udp2eth] open_eth_socket: unable to get device flags for "
+                << eth_name << "." << std::endl;
+      close (sock);
+      exit (-1);
+    }
+    else
+    {
+      /* Set the old flags plus the IFF_PROMISC flag. */
+      ifr.ifr_flags |= IFF_PROMISC;
+      if (ioctl (sock, SIOCSIFFLAGS, &ifr) == -1)
+      {
+        std::cerr << "[udp2eth] open_eth_socket: could not enter "
+                  << eth_name << "into promiscuous mode." << std::endl;
+        close (sock);
+        exit (-1);
+      }
+      printf ("Entering promiscuous mode.\n");
+    }
   }
   return sock;
 }
@@ -304,6 +328,8 @@ int main (int argc, char** argv)
   cl.add (verbose_opt);
   optionmm::basic_option<std::string,true,false> device_opt ('\0', "device", "(Ethernet) Device name", default_device_s);
   cl.add (device_opt);
+  optionmm::bool_option promiscuous_opt ('p', "promiscuous", "Attempt to open device in promiscuous mode", false);
+  cl.add (promiscuous_opt);
   optionmm::basic_option<std::string,true,false> server_opt ('\0', "server", "Server address", default_server_s);
   cl.add (server_opt);
   optionmm::basic_option<std::string,true,false> client_opt ('\0', "client", "Client address", default_client_s);
@@ -352,6 +378,7 @@ int main (int argc, char** argv)
   const bool list_parameters_only = list_opt.value (0);
   const bool verbose = verbose_opt.value (0);
   const std::string device_s = device_opt.value (0);
+  const bool promiscuous = promiscuous_opt.value (0);
   const std::string server_s = server_opt.value (0);
   const std::string client_s = client_opt.value (0);
 
@@ -359,6 +386,7 @@ int main (int argc, char** argv)
   // Report command-line options on std::cerr.
   //
   std::cerr << "[udp2eth] Device name   : " << device_s << std::endl;
+  std::cerr << "[udp2eth]   Promiscuous : " << (promiscuous ? "Yes" :  "No") << std::endl;
   std::cerr << "[udp2eth] Server address: " << server_s << std::endl;
   std::cerr << "[udp2eth] Client address: " << client_s << std::endl;
 
@@ -374,6 +402,8 @@ int main (int argc, char** argv)
   //
   // Ethernet socket.
   //
+
+  // Nothing to do here...
 
   //
   // UDP client addess.
@@ -403,7 +433,7 @@ int main (int argc, char** argv)
     //
     if (eth_sock < 0)
     {
-      eth_sock = open_eth_socket (device_s);
+      eth_sock = open_eth_socket (device_s, promiscuous);
     }
     //
     // Open the UDP server socket for incoming payload.
