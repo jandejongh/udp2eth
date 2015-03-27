@@ -1,7 +1,7 @@
 // udp2eth.cc
 //
 // Author:		Jan de Jongh
-// Version:		0.1
+// Version:		0.2
 // Organization:	TNO
 //
 // (C) 2010, 2011, 2015, Jan de Jongh
